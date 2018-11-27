@@ -1,0 +1,9 @@
+<?php
+namespace Rindow\Security\Core\Authentication\Exception;
+
+use Interop\Lenient\Security\Authentication\Exception\AuthenticationCredentialsNotFoundException as AuthenticationCredentialsNotFoundExceptionInterface;
+
+class AuthenticationCredentialsNotFoundException
+extends AuthenticationException
+implements AuthenticationCredentialsNotFoundExceptionInterface
+{}
