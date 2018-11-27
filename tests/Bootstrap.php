@@ -9,6 +9,9 @@ Rindow\Stdlib\Cache\CacheFactory::$enableFileCache = false;
 //Rindow\Stdlib\Cache\CacheFactory::$notRegister = true;
 Rindow\Stdlib\Cache\CacheFactory::clearCache();
 
+if(!file_exists(__DIR__.'/data'))
+	mkdir(__DIR__.'/data');
+
 if(!class_exists('PHPUnit\Framework\TestCase')) {
     include __DIR__.'/travis/patch55.php';
 }
