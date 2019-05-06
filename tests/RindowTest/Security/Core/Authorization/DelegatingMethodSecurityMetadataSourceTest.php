@@ -5,6 +5,7 @@ use PHPUnit\Framework\TestCase;
 use Rindow\Security\Core\Authorization\Method\AbstractMethodSecurityMetadataSource;
 use Rindow\Security\Core\Authorization\Method\DelegatingMethodSecurityMetadataSource;
 use Rindow\Aop\ProceedingJoinPointInterface;
+use Rindow\Stdlib\Cache\ConfigCache\ConfigCacheFactory;
 
 class TestLogger
 {
@@ -78,12 +79,33 @@ class Test extends TestCase
 {
     public function setUp()
     {
-        \Rindow\Stdlib\Cache\CacheFactory::clearCache();
+    }
+
+    public function getConfigCacheFactory()
+    {
+        $config = array(
+                //'fileCachePath'   => __DIR__.'/../cache',
+                'configCache' => array(
+                    'enableMemCache'  => true,
+                    'enableFileCache' => true,
+                    'forceFileCache'  => false,
+                ),
+                //'apcTimeOut'      => 20,
+                'memCache' => array(
+                    'class' => 'Rindow\Stdlib\Cache\SimpleCache\ArrayCache',
+                ),
+                'fileCache' => array(
+                    'class' => 'Rindow\Stdlib\Cache\SimpleCache\ArrayCache',
+                ),
+        );
+        $configCacheFactory = new ConfigCacheFactory($config);
+        return $configCacheFactory;
     }
 
     public function testCache()
     {
         $logger = new TestLogger();
+        $configCacheFactory = $this->getConfigCacheFactory();
         $config1 = array(
             'Foo\\Test::someaction' => array('ROLE_USER'),
         );
@@ -92,7 +114,7 @@ class Test extends TestCase
             'Foo\\Test::adminaction' => array('ROLE_ADMIN'),
         );
         $metadata2 = new TestMetadataSource($config2,$logger);
-        $metadata = new DelegatingMethodSecurityMetadataSource(array($metadata1,$metadata2));
+        $metadata = new DelegatingMethodSecurityMetadataSource(array($metadata1,$metadata2),$configCacheFactory);
 
         $invocation = new TestInvocation('Foo\\Test::someaction');
         $this->assertTrue($metadata->supports($invocation));
@@ -119,7 +141,7 @@ class Test extends TestCase
         $this->assertCount(4,$logger->log);
 
 
-        $metadata = new DelegatingMethodSecurityMetadataSource(array($metadata1,$metadata2));
+        $metadata = new DelegatingMethodSecurityMetadataSource(array($metadata1,$metadata2),$configCacheFactory);
         $invocation = new TestInvocation('Foo\\Test::someaction');
         $this->assertTrue($metadata->supports($invocation));
         $this->assertEquals(array('ROLE_USER'),$metadata->getAttributes($invocation));

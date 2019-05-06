@@ -52,9 +52,6 @@ class Test extends TestCase
             $this->markTestSkipped(self::$skip);
             return;
         }
-        usleep( RINDOW_TEST_CLEAR_CACHE_INTERVAL );
-        \Rindow\Stdlib\Cache\CacheFactory::clearCache();
-        usleep( RINDOW_TEST_CLEAR_CACHE_INTERVAL );
         $dsn = "sqlite:".self::$RINDOW_TEST_DATA."/test.db.sqlite";
         $username = null;
         $password = null;
@@ -79,6 +76,7 @@ class Test extends TestCase
                     'Rindow\\Database\\Pdo\\LocalTxModule' => true,
                     'Rindow\\Security\\Core\\Module' => true,
                 ),
+                'enableCache'=>false,
             ),
             'database' => array(
                 'connections' => array(

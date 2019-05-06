@@ -1,26 +1,29 @@
 <?php
 namespace Rindow\Security\Core\Authorization\Support;
 
-use Rindow\Stdlib\Cache\CacheHandlerTemplate;
+use Rindow\Stdlib\Cache\ConfigCache\ConfigCacheFactory;
 use Rindow\Security\Core\Authorization\Exception;
 
 class RoleHierarchy
 {
     protected $hierarchy = array();
     protected $rolesReachableMap = array();
-    protected $cacheKey;
-    protected $cachePath = '';
+    protected $cache;
+    protected $cacheTtl;
+    protected $cacheKey='map';
     protected $built = false;
     protected $recursionTracking=array();
 
-    public function __construct(array $hierarchy=null,$cacheKey=null,$cachePath=null)
+    public function __construct(array $hierarchy=null,/*SimpleCache*/ $cache=null,$cacheTtl=null,$cacheKey=null)
     {
         if($hierarchy)
             $this->setHierarchy($hierarchy);
+        if($cache)
+            $this->setCache($cache);
+        if($cacheTtl)
+            $this->setCacheTtl($cacheTtl);
         if($cacheKey)
             $this->setCacheKey($cacheKey);
-        if($cachePath)
-            $this->setCachePath($cachePath);
     }
 
     /**
@@ -38,15 +41,26 @@ class RoleHierarchy
         return $this->hierarchy;
     }
 
+    public function setCache(/*SimpleCache*/ $cache)
+    {
+        $this->cache = $cache;
+    }
+
     public function setCacheKey($cacheKey)
     {
         $this->cacheKey = $cacheKey;
     }
 
-    public function setCachePath($cachePath)
+    public function setCacheTtl($cacheTtl)
     {
-        $this->cachePath = $cachePath;
+        $this->cacheTtl = $cacheTtl;
     }
+
+    protected function getCache()
+    {
+        return $this->cache;
+    }
+
 
     /**
      * @return array Roles
@@ -69,23 +83,17 @@ class RoleHierarchy
     {
         if($this->built)
             return;
-        if($this->cacheKey==null) {
+        if(!$this->cache)
             return;
-        }
-        $cacheHandler = new CacheHandlerTemplate($this->cachePath.__CLASS__);
-        $cache = $cacheHandler->getCache($this->cacheKey);
-        $roleHierarchy = $this;
-        $map = $cache->get(
-            'map',
-            array(),
-            function ($cache,$componentName,&$value) use ($roleHierarchy) {
-                foreach($roleHierarchy->getHierarchy() as $role => $parents) {
-                    $roleHierarchy->resolvReachables($role);
-                }
-                $value = $roleHierarchy->getRolesReachableMap();
-                return true;
+        $cache = $this->getCache();
+        $map = $cache->get(__CLASS__.'/'.$this->cacheKey);
+        if($map===null) {
+            foreach($this->getHierarchy() as $role => $parents) {
+                $this->resolvReachables($role);
             }
-        );
+            $map = $this->getRolesReachableMap();
+            $cache->set(__CLASS__.'/'.$this->cacheKey,$map,$this->cacheTtl);
+        }
         $this->rolesReachableMap = $map;
         $this->built = true;
     }

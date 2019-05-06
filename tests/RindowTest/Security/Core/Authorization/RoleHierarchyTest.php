@@ -3,15 +3,12 @@ namespace RindowTest\Security\Core\Authorization\RoleHierarchyTest;
 
 use PHPUnit\Framework\TestCase;
 use Rindow\Security\Core\Authorization\Support\RoleHierarchy;
-use Rindow\Stdlib\Cache\CacheFactory;
+use Rindow\Stdlib\Cache\SimpleCache\ArrayCache;
 
 class Test extends TestCase
 {
     public function setUp()
     {
-        usleep( RINDOW_TEST_CLEAR_CACHE_INTERVAL );
-        CacheFactory::clearCache();
-        usleep( RINDOW_TEST_CLEAR_CACHE_INTERVAL );
     }
 
     public function testGetReachable()
@@ -107,12 +104,13 @@ class Test extends TestCase
 
     public function testCache()
     {
+        $cache = new ArrayCache();
         $hierarchy = new RoleHierarchy(array(
             'ROLE_ADMIN'     => array('ROLE_OPERATOR','ROLE_DEVELOPER'),
             'ROLE_OPERATOR'  => array('ROLE_USER'),
             'ROLE_DEVELOPER' => array('ROLE_USER'),
             'ROLE_USER'      => array('ROLE_ANONYMOUS'),
-        ), $cacheKey='default');
+        ), $cache);
 
         $answer = array(
         );
@@ -142,7 +140,7 @@ class Test extends TestCase
 
         // Use cache
 
-        $hierarchy = new RoleHierarchy(array(),$cacheKey='default');
+        $hierarchy = new RoleHierarchy(array(),$cache);
 
         $answer = array(
             'ROLE_ANONYMOUS',

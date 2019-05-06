@@ -6,6 +6,7 @@ use Interop\Lenient\Security\Authentication\AuthenticationProvider;
 use Interop\Lenient\Security\Authentication\UserDetails\UserDetails;
 use Interop\Lenient\Security\Authentication\UserDetails\UserDetailsService;
 use Rindow\Security\Core\Authentication\Exception;
+use Rindow\Security\Core\Authentication\Exception\ContainsRejectedAuthentication;
 
 abstract class AbstractUserDetailsAuthenticationProvider implements AuthenticationProvider
 {
@@ -15,7 +16,6 @@ abstract class AbstractUserDetailsAuthenticationProvider implements Authenticati
     protected $userDetailsService; /*UserDetailsService */
     protected $preAuthenticationChecks;
     protected $postAuthenticationChecks;
-    protected $rejectedTokenByPostChecks;
 
     /**
      * @param Authentication $authentication
@@ -90,20 +90,8 @@ abstract class AbstractUserDetailsAuthenticationProvider implements Authenticati
         $this->postAuthenticationChecks = $postAuthenticationChecks;
     }
 
-    public function getRejectedTokenByPostChecks()
-    {
-        return $this->rejectedTokenByPostChecks;
-    }
-
-    public function clearRejectedTokenByPostChecks()
-    {
-        return $this->rejectedTokenByPostChecks = null;
-    }
-
     public function authenticate(/*Authentication*/ $authentication)
     {
-        $this->rejectedTokenByPostChecks = null;
-
         $this->assertAuthenticationTokenType($authentication);
 
         $username = $authentication->getName();
@@ -133,7 +121,10 @@ abstract class AbstractUserDetailsAuthenticationProvider implements Authenticati
             if($this->forcePrincipalAsString) {
                 $principalToReturn = $user->getUsername();
             }
-            $this->rejectedTokenByPostChecks = $this->createSuccessAuthentication($principalToReturn, $authentication, $user);
+            $rejectedAuthentication = $this->createSuccessAuthentication($principalToReturn, $authentication, $user);
+            if($e instanceof ContainsRejectedAuthentication) {
+                $e->setAuthentication($rejectedAuthentication);
+            }
             throw $e;
         }
 

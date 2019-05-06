@@ -68,9 +68,6 @@ class Test extends TestCase
             $this->markTestSkipped(self::$skip);
             return;
         }
-        usleep( RINDOW_TEST_CLEAR_CACHE_INTERVAL );
-        \Rindow\Stdlib\Cache\CacheFactory::clearCache();
-        usleep( RINDOW_TEST_CLEAR_CACHE_INTERVAL );
 
         $client = $this->getPdo();
         $client->exec("DROP TABLE IF EXISTS rindow_authusers");
@@ -352,6 +349,7 @@ class Test extends TestCase
                     'Rindow\\Database\\Pdo\\LocalTxModule'=>true,
                     'Rindow\\Security\\Core\\Module' => true,
                 ),
+                'enableCache'=>false,
             ),
             'container' => array(
                 'aliases' => array(
@@ -436,6 +434,7 @@ class Test extends TestCase
                     'Rindow\\Security\\Core\\Module' => true,
                     //'Rindow\\Module\\Monolog\\Module' => true,
                 ),
+                'enableCache'=>false,
             ),
             'container' => array(
                 'aliases' => array(
@@ -550,6 +549,7 @@ class Test extends TestCase
                     'Rindow\\Security\\Core\\Module' => true,
                     //'Rindow\\Module\\Monolog\\Module' => true,
                 ),
+                'enableCache'=>false,
             ),
             'container' => array(
                 'aliases' => array(

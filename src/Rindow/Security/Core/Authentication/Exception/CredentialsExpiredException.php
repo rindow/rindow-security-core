@@ -5,5 +5,16 @@ use Interop\Lenient\Security\Authentication\Exception\CredentialsExpiredExceptio
 
 class CredentialsExpiredException
 extends AuthenticationException
-implements CredentialsExpiredExceptionInterface
-{}
+implements CredentialsExpiredExceptionInterface,ContainsRejectedAuthentication
+{
+    protected $authentication;
+    public function setAuthentication($authentication)
+    {
+        $this->authentication = $authentication;
+    }
+
+    public function getAuthentication()
+    {
+        return $this->authentication;
+    }
+}

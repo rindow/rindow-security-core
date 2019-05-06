@@ -199,7 +199,6 @@ class Test extends TestCase
 {
     public function setUp()
     {
-        \Rindow\Stdlib\Cache\CacheFactory::clearCache();
     }
 
     public function getAnnotationManager()

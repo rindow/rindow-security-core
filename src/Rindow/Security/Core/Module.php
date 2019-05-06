@@ -221,6 +221,7 @@ class Module
                                 'Rindow\\Security\\Core\\Authorization\\DefaultAnnotationMethodSecurityMetadataSource',
                                 'Rindow\\Security\\Core\\Authorization\\DefaultArrayMethodSecurityMetadataSource',
                             ),
+                            'configCacheFactory' => 'ConfigCacheFactory',
                             // If you want debug informations, it inject following;
                             // 'debug' => true,
                             // 'logger' => 'Logger',
