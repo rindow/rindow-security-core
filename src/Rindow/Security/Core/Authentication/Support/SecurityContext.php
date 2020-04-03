@@ -26,6 +26,11 @@ class SecurityContext implements SecurityContextInterface
         $this->strage = $strage;
     }
 
+    public function getStrage()
+    {
+        return $this->strage;
+    }
+
     public function setLifeTime($lifeTime)
     {
         $this->lifeTime = $lifeTime;
