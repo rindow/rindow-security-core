@@ -23,7 +23,7 @@ class TestComponent1
 	 */
 	public function test()
 	{
-		
+
 	}
 }
 
@@ -38,7 +38,7 @@ class TestComponent2
 	 */
 	public function test()
 	{
-		
+
 	}
 }
 
@@ -54,7 +54,7 @@ class TestComponent3
 	 */
 	public function __invoke()
 	{
-		
+
 	}
 }
 
@@ -144,14 +144,14 @@ class Test extends TestCase
 		$pointcutManager = $adviceManager->getPointcutManager();
 
 		$pointcuts = array_values($pointcutManager->getPointcuts());
-		// ** CAUTION $pointcuts includes pointcuts of the Dao and the Transacion **
-		$this->assertCount(2,$pointcuts);
+		// ** CAUTION $pointcuts excludes pointcuts of the Dao and the Transacion **
+		$this->assertCount(1,$pointcuts);
 		$this->assertEquals('execution('.__NAMESPACE__.'\TestComponent1::*())||'.
 							'execution('.__NAMESPACE__.'\TestComponent2::*())||'.
 							'execution('.__NAMESPACE__.'\TestComponent3::*())',
-							$pointcuts[1]->value);
+							$pointcuts[0]->value);
 
-		$advices = $adviceManager->getAdvices($pointcuts[1]);
+		$advices = $adviceManager->getAdvices($pointcuts[0]);
 		$this->assertCount(1,$advices);
 		$this->assertInstanceOf('Rindow\Aop\Support\Advice\AdviceDefinition',$advices[0]);
 		$pointcutRefs = $advices[0]->getPointcutSignatures();

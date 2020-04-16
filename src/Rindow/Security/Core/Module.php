@@ -27,11 +27,6 @@ class Module
                 ),
             ),
             'aop' => array(
-                'intercept_to' => array(
-                    'Rindow\\Security\\Core\\Authentication\\UserDetails\\UserManager\\UserDetailsSqlRepository' => true,
-                    // You must inject a namespace as the point method access security.
-                    //'your\\component\\namespace' => true,
-                ),
                 'plugins' => array(
                     'Rindow\\Security\\Core\\Authorization\\Method\\AnnotatedComponentRegistrar'=>true,
                 ),
@@ -42,14 +37,6 @@ class Module
                         'type' => 'before',
                         'component' => 'Rindow\\Security\\Core\\Authorization\\DefaultMethodSecurityAdvisor',
                     ),
-                ),
-                'pointcuts' => array(
-                    'Rindow\\Security\\Core\\Authentication\\UserDetails\\UserManager\\UserDetailsSqlRepository'=> 
-                        'execution(Rindow\\Security\\Core\\Authentication\\UserDetails\\UserManager\\UserDetailsSqlRepository::'.
-                            '(save|delete|deleteById)())',
-                //    'your_pointcut_signature1' => 'your_pointcut_pattern',
-                //    'your_pointcut_signature2' => 'your_pointcut_pattern',
-                //    .....
                 ),
                 'aspects' => array(
                     'Rindow\\Security\\Core\\Authorization\\DefaultArrayConfiguredMethodSecurityAdvisor' => array(
@@ -65,27 +52,16 @@ class Module
                         ),
                     ),
                 ),
-                'aspectOptions' => array(
-                    'Rindow\\Database\\Sql\\DefaultDaoExceptionAdvisor' => array(
-                        'advices' => array(
-                            'afterThrowingAdvice' => array(
-                                'pointcut_ref' => array(
-                                    'Rindow\\Security\\Core\\Authentication\\UserDetails\\UserManager\\UserDetailsSqlRepository'=>true,
-                                ),
-                            ),
-                        ),
-                    ),
-                    'Rindow\\Transaction\\DefaultTransactionAdvisor' => array(
-                        'advices' => array(
-                            'required' => array(
-                                'pointcut_ref' => array(
-                                    'Rindow\\Security\\Core\\Authentication\\UserDetails\\UserManager\\UserDetailsSqlRepository' => true,
-                                ),
-                            ),
-                        ),
-                    ),
-                ),
             ),
+            'database' => [
+                'repository' => [
+                    'GenericSqlRepository' => [
+                        'extends' => [
+                            'Rindow\\Security\\Core\\Authentication\\UserDetails\\UserManager\\UserDetailsSqlRepository' => true,
+                        ]
+                    ],
+                ],
+            ],
             'container' => array(
                 'aliases' => array(
                     //'Rindow\\Security\\Core\\Authentication\\DefaultContextStrage' => 'Your_Security_Context_Strage',
@@ -143,7 +119,7 @@ class Module
                             'config' => array('config'=>'security::authentication::default::users'),
                         ),
                     ),
-                    // 
+                    //
                     //  UserDetailsManager of Traditional SQL Style
                     //
                     'Rindow\\Security\\Core\\Authentication\\DefaultSqlUserDetailsManager' => array(
@@ -155,14 +131,14 @@ class Module
                             'authoritiesRepositoryName' => array('config'=>'security::authentication::default::authoritiesRepositoryName'),
                         ),
                     ),
-                    // 
+                    //
                     //  UserDetailsManager of Repository Style
                     //
                     'Rindow\\Security\\Core\\Authentication\\DefaultCrudRepositoryUserDetailsManager' => array(
                         'class' => 'Rindow\\Security\\Core\\Authentication\\UserDetails\\UserManager\\CrudRepositoryUserDetailsManager',
                         'properties' => array(
                             'repository' => array('ref'=>'Rindow\\Security\\Core\\Authentication\\DefaultUserDetailsRepository'),
-                            'maxPasswordAge' => array('config' => 'security::authentication::default::maxPasswordAge'),                            
+                            'maxPasswordAge' => array('config' => 'security::authentication::default::maxPasswordAge'),
                         ),
                     ),
                     'Rindow\\Security\\Core\\Authentication\\DefaultUserDetailsSqlRepository'=>array(
