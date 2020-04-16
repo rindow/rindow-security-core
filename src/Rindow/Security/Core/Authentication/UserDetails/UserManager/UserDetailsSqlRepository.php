@@ -26,12 +26,12 @@ class UserDetailsSqlRepository extends GenericSqlRepository
     protected function cascadedFieldConfig()
     {
         $config = parent::cascadedFieldConfig();
-        array_push($config,[
+        array_push($config,array(
               'property'=>'authorities',
               'tableName'=>$this->authoritiesTableName,
               'masterIdName'=>'userid',
               'fieldName'=>'authority',
-        ]);
+        ));
         return $config;
     }
 }

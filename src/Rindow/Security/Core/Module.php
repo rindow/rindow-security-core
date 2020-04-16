@@ -53,15 +53,15 @@ class Module
                     ),
                 ),
             ),
-            'database' => [
-                'repository' => [
-                    'GenericSqlRepository' => [
-                        'extends' => [
+            'database' => array(
+                'repository' => array(
+                    'GenericSqlRepository' => array(
+                        'extends' => array(
                             'Rindow\\Security\\Core\\Authentication\\UserDetails\\UserManager\\UserDetailsSqlRepository' => true,
-                        ]
-                    ],
-                ],
-            ],
+                        ),
+                    ),
+                ),
+            ),
             'container' => array(
                 'aliases' => array(
                     //'Rindow\\Security\\Core\\Authentication\\DefaultContextStrage' => 'Your_Security_Context_Strage',
